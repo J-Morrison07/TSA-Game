@@ -74,11 +74,11 @@ public class Movement : MonoBehaviour
 
     void Jump()
     {
-        if (isGrounded)
-        {
+        //if (isGrounded)
+        //{
             velocityFromJump = true;
             volecity.y = Mathf.Sqrt(jumpHight * -2f * gravity);
-        }
+        //}
     }
     void Grapple(bool start){
         grappling = start;
