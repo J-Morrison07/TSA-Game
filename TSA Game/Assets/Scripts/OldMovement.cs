@@ -21,6 +21,7 @@ public class Movement : MonoBehaviour
     public float z;
     public float speed = 12f;
     public float jumpHight = 3f;
+    public float grapplingHookStrength = 1f;
     bool grappling = false;
     bool wasGroundedLastFrame;
     bool velocityFromJump;
@@ -57,6 +58,7 @@ public class Movement : MonoBehaviour
             volecity.x = volecity.y = volecity.z = 0;
             volecity.x = x;
             volecity.z = z;
+            Debug.Log("velocity should have been reset");
         }
 
         wasGroundedLastFrame = isGrounded;
@@ -74,20 +76,39 @@ public class Movement : MonoBehaviour
 
     void Jump()
     {
-        //if (isGrounded)
-        //{
+        if (isGrounded)
+        {
             velocityFromJump = true;
             volecity.y = Mathf.Sqrt(jumpHight * -2f * gravity);
-        //}
+        }
     }
     void Grapple(bool start){
         grappling = start;
+        Vector3 grappleDirection;
         if(start == false && isGrounded){
             isGrounded = false;
             velocityFromJump = false;
-            Debug.Log(x + " " + z);
-            volecity.x = volecity.x + x * 10;
-            volecity.y = volecity.z + z * 30;
+            grappleDirection.x = x;
+            grappleDirection.z = z;
+            grappleDirection.y = 0;
+            RaycastHit hit;
+            Vector3 tmpVec2;
+            tmpVec2.x = tmpVec2.y = 0;
+            tmpVec2.z = 3;
+            // Does the ray intersect any objects excluding the player layer
+            if (Physics.Raycast(transform.position + tmpVec2, grappleDirection, out hit, 50))
+            {
+                /*volecity.x = grappleDirection.x * grapplingHookStrength * hit.distance;
+                volecity.y = grapplingHookStrength * hit.distance * 2 * grappleDirection.z;
+                isGrounded = false;
+                velocityFromJump = false;*/
+                transform.position = hit.point;
+            }
+            else
+            {
+                Debug.DrawRay(transform.position, grappleDirection * 1000, Color.white);
+                Debug.Log("Did not Hit");
+            }
         }
     }
 }
