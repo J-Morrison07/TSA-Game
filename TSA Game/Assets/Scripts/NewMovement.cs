@@ -16,8 +16,7 @@ public class NewMovement : MonoBehaviour
 
     public float acceleration = 2;
     public float airControl = 1;
-    public bool limitAirVelocity = false;
-    public Vector3 maxAirVelocity; // leave at 0 to not enforce that axis, a good example would be the y axis
+    public Vector3 maxAirVelocity; // leave at 0 to not enforce that axis, a good example would be the y axis to let the jump velocity be as high as possible
     public float gravity = -9.81f;
     public float jumpStrength = 10;
     public float maxSpeed = 2;
@@ -28,7 +27,7 @@ public class NewMovement : MonoBehaviour
     bool grappling = false;
     Vector3 velocity;
     Vector2 input;
-    // Start is called before the first frame update
+
     void Awake() {
         mainInput = new MainControls();
         
@@ -37,6 +36,9 @@ public class NewMovement : MonoBehaviour
         mainInput.Movement.Jump.performed += ctx => Jump();
         mainInput.Movement.Grapple.performed += ctx => Grapple(true);
         mainInput.Movement.Grapple.canceled += ctx => Grapple(false);
+
+        QualitySettings.vSyncCount = 1;
+        Application.targetFrameRate = 60;
     }
 
     private void OnEnable() {
@@ -45,6 +47,10 @@ public class NewMovement : MonoBehaviour
 
     public void OnDisable() {
         mainInput.Movement.Disable();
+    }
+
+    bool withinRange(float min, float max, float t){
+        return t > min && t < max;
     }
 
     Vector3 makeVector3(float ix, float iy, float iz) {
@@ -74,32 +80,38 @@ public class NewMovement : MonoBehaviour
                 velocity.y = hit.distance * -1 / Time.deltaTime;
             } else {
                 //no clamping for max speed and no clamping for friction
-                if (limitAirVelocity){
-                    if(!(maxAirVelocity.x != 0 && maxAirVelocity.x < Mathf.Abs(velocity.x))){
-                        velocity.x = velocity.x + input.x * acceleration * airControl;
-                    }
-                    if(!(maxAirVelocity.y != 0 && maxAirVelocity.y < Mathf.Abs(velocity.y))){
-                        velocity.z = velocity.z + input.y * acceleration * airControl;
-                    }
-                    if(!(maxAirVelocity.z != 0 && maxAirVelocity.z < Mathf.Abs(velocity.z))){
-                        velocity.y = velocity.y + gravity;
-                    }
-                }else{    
+                if(maxAirVelocity.x != 0 && withinRange(maxAirVelocity.x * -1, maxAirVelocity.x, velocity.x)){
                     velocity.x = velocity.x + input.x * acceleration * airControl;
+                    velocity.x = Mathf.Clamp(maxAirVelocity.x * -1, velocity.x, maxAirVelocity.x) / 1.01f;
+                } else if(maxAirVelocity.x == 0 && withinRange(maxAirVelocity.x * -1, maxAirVelocity.x, velocity.x)){
+                    velocity.x = velocity.x + input.x * acceleration * airControl;
+                }
+
+                if(maxAirVelocity.z != 0 && withinRange(maxAirVelocity.z * -1, maxAirVelocity.z, velocity.z)){
                     velocity.z = velocity.z + input.y * acceleration * airControl;
+                    velocity.z = Mathf.Clamp(maxAirVelocity.z * -1, velocity.z, maxAirVelocity.z) / 1.01f;
+                } else if(maxAirVelocity.z == 0 && withinRange(maxAirVelocity.z * -1, maxAirVelocity.z, velocity.z)) {
+                    velocity.z = velocity.z + input.y * acceleration * airControl;
+                }
+
+                if(maxAirVelocity.y != 0 && withinRange(maxAirVelocity.y * -1, maxAirVelocity.y, velocity.y)){
+                    velocity.y = velocity.y + gravity;
+                    velocity.y = Mathf.Clamp(maxAirVelocity.y * -1, velocity.y, maxAirVelocity.y) / 1.01f;
+                } else if(maxAirVelocity.y == 0) {
                     velocity.y = velocity.y + gravity;
                 }
+                Debug.Log(velocity.x);
             }
-            Vector3 tmpVec;
-            tmpVec.x = Vector3.Normalize(velocity).x / 1.5f;
-            tmpVec.z = Vector3.Normalize(velocity).z / 1.5f;
-            tmpVec.y = 0;
-            if(Physics.CheckSphere(wallCheck.position + tmpVec, wallHitDistance, groundMask)){// this makes it so if you're up close to a wall with a lot of velocity in that direction, moving in a different direction is still possible
-                    velocity.x = 0;
-                    velocity.z = 0;
-            }
-            controller.Move(velocity * Time.deltaTime);
         }
+        Vector3 tmpVec;
+        tmpVec.x = Vector3.Normalize(velocity).x / 1.5f;
+        tmpVec.z = Vector3.Normalize(velocity).z / 1.5f;
+        tmpVec.y = 0;
+        if(Physics.CheckSphere(wallCheck.position + tmpVec, wallHitDistance, groundMask)){// this makes it so if you're up close to a wall with a lot of velocity in that direction, moving in a different direction is still possible
+                velocity.x = 0;
+                velocity.z = 0;
+        }
+        controller.Move(velocity * Time.deltaTime);
     }
 
     void Jump() {
@@ -129,7 +141,6 @@ public class NewMovement : MonoBehaviour
                 velocity.x = grappleDirection.x * grapplingHookStrength * (hitResult.distance * 2);
                 velocity.y = grapplingHookStrength * ((hitResult.distance + 3) * 5) * grappleDirection.z;
                 isGrounded = false;
-                Debug.Log("hit something");
             } else {
                 //probably an animation here?
             }
