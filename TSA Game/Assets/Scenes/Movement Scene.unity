@@ -296,8 +296,8 @@ MonoBehaviour:
   acceleration: 3
   airControl: 0.15
   maxAirVelocity: {x: 12, y: 0, z: 12}
-  gravity: -0.25
-  jumpStrength: 12
+  gravity: -0.5
+  jumpStrength: 17
   maxSpeed: 10
   friction: 1.15
   stepUpDistance: 0.4
