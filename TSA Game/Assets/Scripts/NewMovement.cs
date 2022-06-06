@@ -102,16 +102,16 @@ public class NewMovement : MonoBehaviour
                 }
                 Debug.Log(velocity.x);
             }
+            Vector3 tmpVec;
+            tmpVec.x = Vector3.Normalize(velocity).x / 1.5f;
+            tmpVec.z = Vector3.Normalize(velocity).z / 1.5f;
+            tmpVec.y = 0;
+            if(Physics.CheckSphere(wallCheck.position + tmpVec, wallHitDistance, groundMask)){// this makes it so if you're up close to a wall with a lot of velocity in that direction, moving in a different direction is still possible
+                    velocity.x = 0;
+                    velocity.z = 0;
+            }
+            controller.Move(velocity * Time.deltaTime);
         }
-        Vector3 tmpVec;
-        tmpVec.x = Vector3.Normalize(velocity).x / 1.5f;
-        tmpVec.z = Vector3.Normalize(velocity).z / 1.5f;
-        tmpVec.y = 0;
-        if(Physics.CheckSphere(wallCheck.position + tmpVec, wallHitDistance, groundMask)){// this makes it so if you're up close to a wall with a lot of velocity in that direction, moving in a different direction is still possible
-                velocity.x = 0;
-                velocity.z = 0;
-        }
-        controller.Move(velocity * Time.deltaTime);
     }
 
     void Jump() {
