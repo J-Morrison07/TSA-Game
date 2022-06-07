@@ -119,6 +119,9 @@
         },
         {
             "m_Id": "838b2f553cef4b10867985c5aa17579e"
+        },
+        {
+            "m_Id": "2e0bae334010449697415995fcc3ea39"
         }
     ],
     "m_Edges": [
@@ -1199,6 +1202,26 @@
             "m_Id": "b464683d1f1e455c80c1811dc283968b"
         }
     ]
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.StickyNoteData",
+    "m_ObjectId": "2e0bae334010449697415995fcc3ea39",
+    "m_Title": "Tint",
+    "m_Content": "Write something here",
+    "m_TextSize": 0,
+    "m_Theme": 0,
+    "m_Position": {
+        "serializedVersion": "2",
+        "x": 189.0,
+        "y": -265.0,
+        "width": 200.0,
+        "height": 160.0
+    },
+    "m_Group": {
+        "m_Id": ""
+    }
 }
 
 {
