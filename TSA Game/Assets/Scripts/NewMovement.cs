@@ -80,23 +80,23 @@ public class NewMovement : MonoBehaviour
                 velocity.y = hit.distance * -1 / Time.deltaTime;
             } else {
                 //no clamping for max speed and no clamping for friction
-                if(maxAirVelocity.x != 0 && withinRange(maxAirVelocity.x * -1, maxAirVelocity.x, velocity.x)){
+                if(maxAirVelocity.x != 0 && withinRange(maxAirVelocity.x * -1, maxAirVelocity.x, velocity.x + input.x * acceleration * airControl)){
                     velocity.x = velocity.x + input.x * acceleration * airControl;
-                    velocity.x = Mathf.Clamp(maxAirVelocity.x * -1, velocity.x, maxAirVelocity.x) / 1.01f;
+                    velocity.x = Mathf.Clamp(maxAirVelocity.x * -1, velocity.x, maxAirVelocity.x);
                 } else if(maxAirVelocity.x == 0 && withinRange(maxAirVelocity.x * -1, maxAirVelocity.x, velocity.x)){
                     velocity.x = velocity.x + input.x * acceleration * airControl;
                 }
 
-                if(maxAirVelocity.z != 0 && withinRange(maxAirVelocity.z * -1, maxAirVelocity.z, velocity.z)){
+                if(maxAirVelocity.z != 0 && withinRange(maxAirVelocity.z * -1, maxAirVelocity.z, velocity.z + input.y * acceleration * airControl)){
                     velocity.z = velocity.z + input.y * acceleration * airControl;
-                    velocity.z = Mathf.Clamp(maxAirVelocity.z * -1, velocity.z, maxAirVelocity.z) / 1.01f;
+                    velocity.z = Mathf.Clamp(maxAirVelocity.z * -1, velocity.z, maxAirVelocity.z);
                 } else if(maxAirVelocity.z == 0 && withinRange(maxAirVelocity.z * -1, maxAirVelocity.z, velocity.z)) {
                     velocity.z = velocity.z + input.y * acceleration * airControl;
                 }
 
                 if(maxAirVelocity.y != 0 && withinRange(maxAirVelocity.y * -1, maxAirVelocity.y, velocity.y)){
                     velocity.y = velocity.y + gravity;
-                    velocity.y = Mathf.Clamp(maxAirVelocity.y * -1, velocity.y, maxAirVelocity.y) / 1.01f;
+                    velocity.y = Mathf.Clamp(maxAirVelocity.y * -1, velocity.y, maxAirVelocity.y);
                 } else if(maxAirVelocity.y == 0) {
                     velocity.y = velocity.y + gravity;
                 }
