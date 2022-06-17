@@ -65,7 +65,12 @@ public class NewMovement : MonoBehaviour
     }
     // Update is called once per frame
     void Update() {
-        input = input.normalized; // makes it so you don't go any faster while moving diagonally
+        if(Mathf.Sqrt(input.x * input.x + input.y + input.y) > 1)
+        {
+            Debug.Log(input.x / Mathf.Sqrt(input.x * input.x + input.y + input.y));
+            input.x = input.x / Mathf.Sqrt(input.x * input.x + input.y + input.y);
+            input.y = input.y / Mathf.Sqrt(input.x * input.x + input.y + input.y);
+        }
         if(velocity.y < 0.1f) {
             isGrounded = Physics.CheckSphere(groundCheck.position, stepUpDistance, groundMask);
             if(isGrounded){
