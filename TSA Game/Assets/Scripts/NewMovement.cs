@@ -5,10 +5,13 @@ using UnityEngine.InputSystem;
 
 public class NewMovement : MonoBehaviour
 {
+    public Animator animator; //for model animations
+    public GameObject armatureRef;
     public CharacterController controller;
     public MainControls mainInput;
 
     bool isGrounded;
+    bool wasGrounded;
 
     public Transform groundCheck;
     public Transform wallCheck;
@@ -65,6 +68,11 @@ public class NewMovement : MonoBehaviour
         input = input.normalized; // makes it so you don't go any faster while moving diagonally
         if(velocity.y < 0.1f) {
             isGrounded = Physics.CheckSphere(groundCheck.position, stepUpDistance, groundMask);
+            if(isGrounded){
+                animator.ResetTrigger("jumpend");
+            }else{
+                animator.SetTrigger("jumpend");
+            }
         }
         if(!grappling){
             if(isGrounded) {
@@ -78,6 +86,12 @@ public class NewMovement : MonoBehaviour
                 RaycastHit hit;
                 Physics.Raycast(groundCheck.position + makeVector3(0, stepUpDistance, 0), makeVector3(0, -1, 0), out hit, stepUpDistance * 2);
                 velocity.y = hit.distance * -1 / Time.deltaTime;
+
+                //rotates the player based off input
+                if(input.x != 0 || input.y != 0){
+                    armatureRef.transform.rotation = Quaternion.Euler(-90, 0, Mathf.Atan2(input.x, input.y) * Mathf.Rad2Deg);
+                }
+                animator.ResetTrigger("jumpstart");
             } else {
                 //no clamping for max speed and no clamping for friction
                 if(maxAirVelocity.x != 0 && withinRange(maxAirVelocity.x * -1, maxAirVelocity.x, velocity.x + input.x * acceleration * airControl)){
@@ -100,7 +114,12 @@ public class NewMovement : MonoBehaviour
                 } else if(maxAirVelocity.y == 0) {
                     velocity.y = velocity.y + gravity;
                 }
-                Debug.Log(velocity.x);
+
+                //rotates the player based off velocity
+                if(input.x != 0 || input.y != 0){
+                    armatureRef.transform.rotation = Quaternion.Euler(-90, 0, Mathf.Atan2(velocity.normalized.x, velocity.normalized.z) * Mathf.Rad2Deg);
+                }
+                animator.SetFloat("verticalvelocity", Mathf.Clamp(velocity.y / 4 + 0.5f, 0, 1));
             }
             Vector3 tmpVec;
             tmpVec.x = Vector3.Normalize(velocity).x / 1.5f;
@@ -111,6 +130,10 @@ public class NewMovement : MonoBehaviour
                     velocity.z = 0;
             }
             controller.Move(velocity * Time.deltaTime);
+
+            //animation code
+            animator.SetFloat("walk", Mathf.Sqrt((input.x * input.x) + (input.y * input.y)));
+            animator.SetFloat("walkspeed", Mathf.Sqrt((input.x * input.x) + (input.y * input.y)) + 1.0f);
         }
     }
 
@@ -120,6 +143,7 @@ public class NewMovement : MonoBehaviour
             isGrounded = false;
             controller.Move(makeVector3(0, 1, 0));
             velocity.y = jumpStrength;
+            animator.SetTrigger("jumpstart");
         }
     }
     void Grapple(bool start) {

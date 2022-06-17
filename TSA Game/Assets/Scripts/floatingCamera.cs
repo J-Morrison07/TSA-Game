@@ -37,7 +37,16 @@ public class floatingCamera : MonoBehaviour
 
     void Start()
     {
-        
+        p1Pos = p1.transform.position;
+        p2Pos = p2.transform.position;
+        cameraPos = (p1Pos + p2Pos) / 2;
+        cameraPos = cameraPos * camMultiplier;
+        cameraPos.z = -5 - Mathf.Sqrt((p1Pos.x - p2Pos.x) * (p1Pos.x - p2Pos.x) + (p1Pos.y - p2Pos.y) * (p1Pos.y - p2Pos.y));
+        cameraPos.y = cameraPos.y + 3;
+        cameraPos.z = cameraPos.z - zOffset;
+        transform.position = cameraPos;
+        cameraRot = (p1Pos + p2Pos) / 2 - transform.position;
+        transform.rotation = Quaternion.LookRotation(cameraRot, Vector3.up);
     }
 
     // Update is called once per frame
