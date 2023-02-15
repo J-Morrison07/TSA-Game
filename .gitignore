@@ -39,3 +39,9 @@ sysinfo.txt
 Icon?
 ehthumbs.db
 Thumbs.db
+*.log
+TSA Game/UserSettings/Layouts/default-2021.dwlt
+TSA Game/UserSettings/EditorUserSettings.asset
+*.log
+*.blend1
+TSA Game/Assets/Textures/Player/dirt mask.blend1.meta
